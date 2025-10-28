@@ -21,7 +21,6 @@ public class Drive extends SubsystemBase {
         front_right  = hMap.get(DcMotor.class, "front_right");
         back_left    = hMap.get(DcMotor.class, "back_left");
         back_right   = hMap.get(DcMotor.class, "back_right");
-
         this.gamepad = gamepad;
     }
     @Override
