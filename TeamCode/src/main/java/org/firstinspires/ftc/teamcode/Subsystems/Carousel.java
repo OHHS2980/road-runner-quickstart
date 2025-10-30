@@ -7,14 +7,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Carousel extends SubsystemBase {
     DcMotor carouselMotor;
     double encoder = 28;
-
     public Carousel(final HardwareMap hMap, final String CMotor) {
-        carouselMotor = hMap.get(DcMotor.class, "carouselMotor");
+        carouselMotor = hMap.get(DcMotor.class, "carouselMotor"); //motor
     }
 
-    public void startCarousel() {
-        carouselMotor.setPower(0.5);
+    public void startCarousel(double power) {
+        carouselMotor.setPower(power);
     }
+
+
 
     public void reverseCarousel() {
         carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -24,7 +25,9 @@ public class Carousel extends SubsystemBase {
         carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+
     public void stopCarousel() {
+        carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         carouselMotor.setPower(0);
     }
 }

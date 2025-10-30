@@ -8,6 +8,7 @@ public class OuttakeCommand extends CommandBase {
     private final Outtake OuttakeSubsystem;
 
     public OuttakeCommand(Outtake subsystem) {
+
         OuttakeSubsystem = subsystem;
     }
 
@@ -15,7 +16,7 @@ public class OuttakeCommand extends CommandBase {
         OuttakeSubsystem.startOuttake();
     }
 
-    public void end() {
+    public void end(boolean interrupted) {
         OuttakeSubsystem.stopOuttake();
     }
 }

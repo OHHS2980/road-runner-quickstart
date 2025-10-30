@@ -14,10 +14,10 @@ public class CarouselCommand extends CommandBase {
     }
 
     public void execute() {
-        CarouselSubsystem.startCarousel();
+        CarouselSubsystem.startCarousel(0.5d);
     }
 
-    public void end() {
+    public void end(boolean isFinished) {
         CarouselSubsystem.stopCarousel();
     }
 }

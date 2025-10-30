@@ -13,7 +13,12 @@ public class ReverseCarouselCommand extends CommandBase {
         addRequirements(CarouselSubsystem);
     }
 
-    public void initiate() {
-        CarouselSubsystem.reverseCarousel();
+    public void initialize() {
+        CarouselSubsystem.startCarousel(-0.5);
+    }
+
+    public void end(boolean interrupted)
+    {
+        CarouselSubsystem.stopCarousel();
     }
 }

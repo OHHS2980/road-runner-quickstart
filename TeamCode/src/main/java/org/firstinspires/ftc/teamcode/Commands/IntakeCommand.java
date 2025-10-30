@@ -12,9 +12,13 @@ public class IntakeCommand extends CommandBase {
         addRequirements(IntakeSubsystem);
     }
 
-    public void execute() {
+    public void initialize()
+    {
         IntakeSubsystem.startIntake();
     }
 
-    public void end() {IntakeSubsystem.stopIntake(); }
+    public void end(boolean isFinished)
+    {
+        IntakeSubsystem.stopIntake();
+    }
 }

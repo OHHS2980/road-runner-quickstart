@@ -12,8 +12,11 @@ public class Outtake extends SubsystemBase {
     DcMotor outtakeMotorB;
 
     public Outtake(final HardwareMap hMap, final String OMotor) {
-        outtakeMotorA = hMap.get(DcMotor.class, "outtakeMotorA");
-        outtakeMotorB = hMap.get(DcMotor.class, "outtakeMotorB");
+        outtakeMotorA = hMap.get(DcMotor.class, "outtakeMotorA"); //motor
+        outtakeMotorB = hMap.get(DcMotor.class, "outtakeMotorB"); //motor
+
+        outtakeMotorA.setPower(1);
+        outtakeMotorB.setPower(1);
     }
 
     public void startOuttake() {

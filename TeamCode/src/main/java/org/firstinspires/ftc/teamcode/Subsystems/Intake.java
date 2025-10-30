@@ -9,12 +9,15 @@ public class Intake extends SubsystemBase {
     DcMotor intakeMotor;
 
     public Intake(final HardwareMap hMap, final String IMotor) {
-        intakeMotor = hMap.get(DcMotor.class, "intakeMotor");
+        intakeMotor = hMap.get(DcMotor.class, "intakeMotor"); //motor
     }
 
     public void startIntake() {
         intakeMotor.setPower(1);
     }
 
-    public void stopIntake() { intakeMotor.setPower(0); }
+    public void stopIntake()
+    {
+        intakeMotor.setPower(0);
+    }
 }

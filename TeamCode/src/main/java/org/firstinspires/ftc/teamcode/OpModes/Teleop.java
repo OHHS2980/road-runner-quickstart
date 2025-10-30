@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -8,10 +9,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Commands.CarouselCommand;
+import org.firstinspires.ftc.teamcode.Commands.EmergencyShoot;
 import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
 import org.firstinspires.ftc.teamcode.Commands.OuttakeCommand;
 import org.firstinspires.ftc.teamcode.Commands.ReverseCarouselCommand;
 import org.firstinspires.ftc.teamcode.Subsystems.Carousel;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Outtake;
 
@@ -29,9 +32,9 @@ public class Teleop extends OpMode {
         driveOp = new GamepadEx(gamepad1);
 
         Drive drive = new Drive(hardwareMap, driveOp);
-        Intake intake = new Intake(hardwareMap, "intakeMotor");
-        Outtake outtake =  new Outtake(hardwareMap, "outtakeMotor");
-        Carousel carousel = new Carousel(hardwareMap, "carouselMotor");
+        Intake intake = new Intake(hardwareMap, "intakeMotor"); //motor
+        Outtake outtake =  new Outtake(hardwareMap, "outtakeMotor"); //motor
+        Carousel carousel = new Carousel(hardwareMap, "carouselMotor"); //motor
 
         Button A = new GamepadButton(driveOp, GamepadKeys.Button.A);
         Button B = new GamepadButton(driveOp, GamepadKeys.Button.B);
@@ -39,7 +42,7 @@ public class Teleop extends OpMode {
         Button X = new GamepadButton(driveOp, GamepadKeys.Button.X);
 
         A.whenHeld(new IntakeCommand(intake));
-        B.whenHeld(new OuttakeCommand(outtake));
+        B.whenHeld(new EmergencyShoot(outtake));
         Y.whenHeld(new CarouselCommand(carousel));
         X.whenPressed(new ReverseCarouselCommand(carousel));
 
@@ -47,5 +50,6 @@ public class Teleop extends OpMode {
 
     @Override
     public void loop() {
+        CommandScheduler.getInstance().run();
     }
 }
