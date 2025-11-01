@@ -12,7 +12,7 @@ public class IntakeCommand extends CommandBase {
         addRequirements(IntakeSubsystem);
     }
 
-    public void initialize()
+    public void execute()
     {
         IntakeSubsystem.startIntake();
     }

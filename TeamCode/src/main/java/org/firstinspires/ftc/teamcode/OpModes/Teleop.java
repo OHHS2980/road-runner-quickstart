@@ -7,6 +7,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Commands.CarouselCommand;
 import org.firstinspires.ftc.teamcode.Commands.EmergencyShoot;
@@ -35,6 +36,9 @@ public class Teleop extends OpMode {
         Intake intake = new Intake(hardwareMap, "intakeMotor"); //motor
         Outtake outtake =  new Outtake(hardwareMap, "outtakeMotor"); //motor
         Carousel carousel = new Carousel(hardwareMap, "carouselMotor"); //motor
+
+        //DcMotor intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        //intakeMotor.setPower(1);
 
         Button A = new GamepadButton(driveOp, GamepadKeys.Button.A);
         Button B = new GamepadButton(driveOp, GamepadKeys.Button.B);
