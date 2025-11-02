@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Commands.CarouselCommand;
 import org.firstinspires.ftc.teamcode.Commands.EmergencyShoot;
 import org.firstinspires.ftc.teamcode.Commands.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Commands.OuttakeCommand;
 import org.firstinspires.ftc.teamcode.Commands.ReverseCarouselCommand;
+import org.firstinspires.ftc.teamcode.Commands.ReverseIntakeCommand;
 import org.firstinspires.ftc.teamcode.Subsystems.Carousel;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
@@ -42,13 +42,17 @@ public class Teleop extends OpMode {
 
         Button A = new GamepadButton(driveOp, GamepadKeys.Button.A);
         Button B = new GamepadButton(driveOp, GamepadKeys.Button.B);
-        Button Y = new GamepadButton(driveOp, GamepadKeys.Button.Y);
+        Button lT = new GamepadButton(driveOp, GamepadKeys.Button.LEFT_BUMPER);
         Button X = new GamepadButton(driveOp, GamepadKeys.Button.X);
+        Button Y = new GamepadButton(driveOp, GamepadKeys.Button.Y);
+        Button rT = new GamepadButton(driveOp, GamepadKeys.Button.RIGHT_BUMPER);
 
         A.whenHeld(new IntakeCommand(intake));
-        B.whenHeld(new EmergencyShoot(outtake));
-        Y.whenHeld(new CarouselCommand(carousel));
-        X.whenPressed(new ReverseCarouselCommand(carousel));
+        B.whenHeld(new ReverseIntakeCommand(intake));
+        lT.whenHeld(new CarouselCommand(carousel));
+        rT.whenHeld(new ReverseCarouselCommand(carousel));
+        X.whenPressed(new EmergencyShoot(outtake, 1));
+        Y.whenPressed(new EmergencyShoot(outtake, 0));
 
     }
 

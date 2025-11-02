@@ -9,14 +9,19 @@ public class EmergencyShoot extends CommandBase {
 
     private final Outtake OuttakeSubsystem;
 
-    public EmergencyShoot(Outtake subsystem) {
+    private final int on;
+
+    public EmergencyShoot(Outtake subsystem, int on) {
         OuttakeSubsystem = subsystem;
         addRequirements(OuttakeSubsystem);
+        this.on = on;
     }
 
     public void initialize() {
-        OuttakeSubsystem.startOuttake();
+        OuttakeSubsystem.startOuttake(on);
     }
+
+    //public void end(boolean interrupted) {OuttakeSubsystem.stopOuttake();}
 
 }
 

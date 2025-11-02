@@ -19,9 +19,9 @@ public class Outtake extends SubsystemBase {
         outtakeMotorB.setPower(1);
     }
 
-    public void startOuttake() {
-        outtakeMotorA.setPower(1);
-        outtakeMotorB.setPower(-1);
+    public void startOuttake(int power) {
+        outtakeMotorA.setPower(power);
+        outtakeMotorB.setPower(-power);
     }
 
     public void stopOuttake() {
