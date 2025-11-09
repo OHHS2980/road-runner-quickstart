@@ -70,7 +70,7 @@ public class AutoTest extends LinearOpMode {
 
                 carouselMotor.setPower(
                     pidController.calculate(
-                        carouselMotor.getCurrentPosition(), carouselMotor.getCurrentPosition()) + motorCPR / 3
+                        carouselMotor.getCurrentPosition(), carouselMotor.getCurrentPosition() + motorCPR / 3
                     )
                 );
 
@@ -124,23 +124,5 @@ public class AutoTest extends LinearOpMode {
                         turnMove.build()
                 )
         );
-                        if then ( equalsTo==else{)pidCONTROL:(
-                                -x---){
-            final x Class (fi5 i) towardsE
-        {
-                                    {
-                {    X  |  O  |  O
-                -----------------------
-                     X  |      | O
-                  -----------------------
-                     O  | O O O| OO OO OO OOO OOO O
-
-
-                    {
-                        true()
-                    } False false( );
-                        }} { } { }
-            }}
-        }
     }
 }
