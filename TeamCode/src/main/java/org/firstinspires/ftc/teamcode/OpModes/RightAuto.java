@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes;
 
+import android.security.keystore.StrongBoxUnavailableException;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -23,7 +25,15 @@ import org.firstinspires.ftc.teamcode.Subsystems.AutoDrive;
 @Autonomous
 public class RightAuto extends LinearOpMode {
 
+
+
+
     public DcMotor carouselMotor;
+
+    boolean fullyDone = false;
+
+    int done = 0;
+
 
     public IMU imu;
 
@@ -35,7 +45,6 @@ public class RightAuto extends LinearOpMode {
     private Motor front_right = null;
     private Motor back_left   = null;
     private Motor back_right  = null;
-
     public class powerOuttake implements Action {
         public boolean run(@NonNull TelemetryPacket telemetry)
         {
@@ -51,13 +60,24 @@ public class RightAuto extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket telemetry)
         {
 
-            carouselMotor.setPower(-1);
+            carouselMotor.setPower(0.45);
 
-            if (Math.abs(carouselMotor.getCurrentPosition() - initialEncoderPosition) > 100)
+            if (Math.abs(carouselMotor.getCurrentPosition() - initialEncoderPosition) > 80)
             {
                 carouselMotor.setPower(0);
-                return false;
+                sleep(2000);
+
+                done += 1;
+                initialEncoderPosition = carouselMotor.getCurrentPosition();
+
+                if (done == 3)
+                {
+                    fullyDone = true;
+                    return false;
+                }
             }
+
+
             return true;
         }
     }
@@ -75,12 +95,14 @@ public class RightAuto extends LinearOpMode {
                 first = false;
             }
 
-            front_left.set(-0.1);
-            front_right.set(-0.1);
-            back_left.set(-0.1);
-            back_right.set(-0.1);
-            if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > 15) {
+            front_left.set(-0.15);
+            front_right.set(0.15);
+            back_left.set(0.15);
+            back_right.set(-0.15);
+            if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > 90) {
                 front_left.set(0);
+
+
                 front_right.set(0);
                 back_left.set(0);
                 back_right.set(0);
@@ -94,11 +116,24 @@ public class RightAuto extends LinearOpMode {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetry)
         {
-            front_left.set(-1);
-            front_right.set(-1);
-            back_left.set(1);
-            back_right.set(-1);
-            sleep(1500);
+            front_left.set(-0.5);
+            front_right.set(-0.5);
+            back_left.set(-0.5);
+            back_right.set(-0.5);
+            sleep(2300);
+            return false;
+        }
+    }
+
+    public class emergencyMoveFoward implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetry)
+        {
+            front_left.set(0.5);
+            front_right.set(0.5);
+            back_left.set(0.5);
+            back_right.set(0.5);
+            sleep(2300);
             return false;
         }
     }
@@ -130,6 +165,9 @@ public class RightAuto extends LinearOpMode {
     }
     public Action EmergencyStop() {
         return new emergencyStop();
+    }
+    public Action EmergencyMoveFoward() {
+        return new emergencyMoveFoward();
     }
 
 
@@ -168,17 +206,24 @@ public class RightAuto extends LinearOpMode {
         TrajectoryActionBuilder tab1 = drive.mecanum.actionBuilder(initialPose)
                 .turn(90);
 
+
+
         while (opModeIsActive()){
-            Actions.runBlocking(
+
+            if (fullyDone == false)
+            {
+                Actions.runBlocking(
                     new SequentialAction(
                             //tab1.build(),
-                            PowerOuttake(),
-                            EmergencyMove(),
-                            EmergencyStop(),
-                            AutoShoot()
-
+                        PowerOuttake(),
+                        EmergencyMove(),
+                        EmergencyStop(),
+                        AutoShoot(),
+                        EmergencyTurn(),
+                        EmergencyMoveFoward()
                     )
-            );
+                );
+            }
         }
 
 
