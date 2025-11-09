@@ -12,10 +12,12 @@ public class CarouselThirdCommand extends CommandBase {
     }
 
     public void execute() {
+
         CarouselSubsystem.rotateCarouselThird();
     }
 
     public void end(boolean isFinished) {
+
         CarouselSubsystem.stopCarousel();
     }
 

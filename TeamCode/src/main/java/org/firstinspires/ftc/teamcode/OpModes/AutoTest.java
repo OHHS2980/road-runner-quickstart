@@ -19,9 +19,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Subsystems.Outtake;
+import org.firstinspires.ftc.teamcode.TwoDeadWheelLocalizer;
+import org.opencv.video.KalmanFilter;
 
 @Autonomous(name = "nico has no hoes")
 public class AutoTest extends LinearOpMode {
+
+
 
     public class Outtake {
         private DcMotor outtakeMotorA;
@@ -47,16 +51,17 @@ public class AutoTest extends LinearOpMode {
 
     public class Carousel {
         private DcMotor carouselMotor;
-
+        private PIDController pid;
+        private double kP = 0;
+        private double kI = 0;
+        private double kD = 0;
         public double motorCPR = 28 * 5 * 4;
-
         public Carousel() {
             carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         }
-
         public class shoots implements Action {
             boolean initialized = false;
-            PIDController pidController = new PIDController(0,0,0);
+            PIDController pidController = new PIDController(kP,kI,kD);
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -74,14 +79,13 @@ public class AutoTest extends LinearOpMode {
                     )
                 );
 
-                if (pidController.getPositionError() < 1)
+                if (pidController.getPositionError() > 1)
                 {
                     return true;
                 }
                 else
                 {
                     carouselMotor.setPower(0);
-                    initialized = false;
                     return false;
                 }
                 //if (pos > ) {
