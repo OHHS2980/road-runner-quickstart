@@ -21,9 +21,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Subsystems.AutoDrive;
 
 @Autonomous
-public class LeftAuto extends LinearOpMode {
+public class RightLeftAuto extends LinearOpMode {
 
     public DcMotor carouselMotor;
+
+    boolean fullyDone = false;
+
+    int done = 0;
+
 
     public IMU imu;
 
@@ -35,7 +40,6 @@ public class LeftAuto extends LinearOpMode {
     private Motor front_right = null;
     private Motor back_left   = null;
     private Motor back_right  = null;
-
     public class powerOuttake implements Action {
         public boolean run(@NonNull TelemetryPacket telemetry)
         {
@@ -51,13 +55,24 @@ public class LeftAuto extends LinearOpMode {
         public boolean run(@NonNull TelemetryPacket telemetry)
         {
 
-            carouselMotor.setPower(-1);
+            carouselMotor.setPower(0.45);
 
-            if (Math.abs(carouselMotor.getCurrentPosition() - initialEncoderPosition) > 100)
+            if (Math.abs(carouselMotor.getCurrentPosition() - initialEncoderPosition) > 80)
             {
                 carouselMotor.setPower(0);
-                return false;
+                sleep(2000);
+
+                done += 1;
+                initialEncoderPosition = carouselMotor.getCurrentPosition();
+
+                if (done == 3)
+                {
+                    fullyDone = true;
+                    return false;
+                }
             }
+
+
             return true;
         }
     }
@@ -68,22 +83,21 @@ public class LeftAuto extends LinearOpMode {
         boolean first = true;
 
         @Override
-
-        public boolean run(@NonNull TelemetryPacket telemetry)
-        {
+        public boolean run(@NonNull TelemetryPacket telemetry) {
             if (first == true)
             {
                 imu.resetYaw();
                 first = false;
             }
-            front_left.set(0.1);
-            front_right.set(0.1);
-            back_left.set(0.1);
-            back_right.set(0.1);
 
-            if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < -15)
-            {
+            front_left.set(-0.15);
+            front_right.set(0.15);
+            back_left.set(0.15);
+            back_right.set(-0.15);
+            if (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > 90) {
                 front_left.set(0);
+
+
                 front_right.set(0);
                 back_left.set(0);
                 back_right.set(0);
@@ -102,7 +116,19 @@ public class LeftAuto extends LinearOpMode {
             back_left.set(-0.5);
             back_right.set(-0.5);
             sleep(2300);
+            return false;
+        }
+    }
 
+    public class emergencyMoveFoward implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetry)
+        {
+            front_left.set(0.5);
+            front_right.set(0.5);
+            back_left.set(0.5);
+            back_right.set(0.5);
+            sleep(2300);
             return false;
         }
     }
@@ -122,14 +148,6 @@ public class LeftAuto extends LinearOpMode {
         return new autoShoot();
     }
 
-    public Action EmergencyMove() {
-        return new emergencyMove();
-    }
-
-    public Action EmergencyStop() {
-        return new emergencyStop();
-    }
-
     public Action PowerOuttake() {
         return new powerOuttake();
     }
@@ -137,7 +155,15 @@ public class LeftAuto extends LinearOpMode {
     public Action EmergencyTurn() {
         return new emergencyTurn();
     }
-
+    public Action EmergencyMove() {
+        return new emergencyMove();
+    }
+    public Action EmergencyStop() {
+        return new emergencyStop();
+    }
+    public Action EmergencyMoveFoward() {
+        return new emergencyMoveFoward();
+    }
 
 
     @Override
@@ -149,11 +175,10 @@ public class LeftAuto extends LinearOpMode {
         front_right   = new Motor(hardwareMap, "rightFront");
         back_left    = new Motor(hardwareMap, "leftBack");
         back_right  = new Motor(hardwareMap, "rightBack");
+        imu = hardwareMap.get(IMU.class, "imu");
 
         back_right.setInverted(true);
         front_right.setInverted(true);
-
-        imu = hardwareMap.get(IMU.class, "imu");
 
         imu.initialize(
                 new IMU.Parameters(
@@ -176,23 +201,29 @@ public class LeftAuto extends LinearOpMode {
         TrajectoryActionBuilder tab1 = drive.mecanum.actionBuilder(initialPose)
                 .turn(90);
 
+
+
         while (opModeIsActive()){
-            Actions.runBlocking(
-                    new SequentialAction(
-                            //tab1.build(),
-                            PowerOuttake(),
-                            EmergencyMove(),
-                            EmergencyStop(),
-                            AutoShoot()
-                    )
-            );
+
+            if (fullyDone == false)
+            {
+                Actions.runBlocking(
+                        new SequentialAction(
+                                //tab1.build(),
+                                PowerOuttake(),
+                                EmergencyMove(),
+                                EmergencyStop(),
+                                AutoShoot()
+                        )
+                );
+            }
         }
 
 
         //front_left   = new Motor(hardwareMap, "leftFront");
-         //front_right   = new Motor(hardwareMap, "rightFront");
-         ///back_left    = new Motor(hardwareMap, "leftBack");
-        /// back_right  = new Motor(hardwareMap, "rightBack");
+        //front_right   = new Motor(hardwareMap, "rightFront");
+        ///back_left    = new Motor(hardwareMap, "leftBack");
+        ///back_right  = new Motor(hardwareMap, "rightBack");
 
         //front_right.setInverted(true);
         ///back_right.setInverted(true);
@@ -205,3 +236,4 @@ public class LeftAuto extends LinearOpMode {
 
 
 }
+
