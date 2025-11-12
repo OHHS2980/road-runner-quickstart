@@ -1,0 +1,194 @@
+package org.firstinspires.ftc.teamcode.OpModes;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.MecanumDrive;
+
+@Autonomous(name = "thorin has all the girls")
+public class RedAuto extends LinearOpMode {
+
+
+
+    public class Outtake {
+        private DcMotor outtakeMotorA;
+        private DcMotor outtakeMotorB;
+
+        public Outtake() {
+            outtakeMotorA = hardwareMap.get(DcMotor.class, "outtakeMotorA");
+            outtakeMotorB = hardwareMap.get(DcMotor.class, "outtakeMotorB");
+        }
+
+        public class startOuttake implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                outtakeMotorA.setPower(1);
+                outtakeMotorB.setPower(-1);
+                return false;
+            }
+        }
+        public Action StartOuttake() {
+            return new startOuttake();
+        }
+    }
+
+    public class Intake {
+        private DcMotor intakeMotor;
+
+        private double intakePower;
+
+        public Intake() {
+            intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+        }
+
+        public class startIntake implements Action {
+            public startIntake(double IntakePower) {
+                intakePower = IntakePower;
+            }
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                intakeMotor.setPower(intakePower);
+                return false;
+            }
+        }
+        public Action StartIntake(double IntakePower) {
+            return new startIntake(IntakePower);
+        }
+    }
+    public class Carousel {
+        private DcMotor carouselMotor;
+        private PIDController pid;
+        private double kP = 0;
+        private double kI = 0;
+        private double kD = 0;
+        public double motorCPR = 28 * 5 * 4;
+        public double carouselPower;
+        public Carousel() {
+            carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
+        }
+        public class rotate implements Action {
+            boolean initialized = false;
+            PIDController pidController = new PIDController(kP, kI, kD);
+
+            public rotate(double CarouselPower)
+            {
+                carouselPower = CarouselPower;
+            }
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (!initialized) {
+                    carouselMotor.setPower(carouselPower);
+                    initialized = true;
+                }
+                //double pos = carouselMotor.getCurrentPosition();
+
+
+
+                carouselMotor.setPower(
+                        pidController.calculate(
+                                carouselMotor.getCurrentPosition(), carouselMotor.getCurrentPosition() + motorCPR / 3
+                        )
+                );
+
+                if (pidController.getPositionError() > 1)
+                {
+                    return true;
+                }
+                else
+                {
+                    carouselMotor.setPower(0);
+                    return false;
+                }
+                //if (pos > ) {
+                //    return true;
+            }
+        }
+        public Action Rotate(double CarouselPower) {
+            return new rotate(CarouselPower);
+        }
+    }
+
+    @Override
+    public void runOpMode()
+    {
+        Pose2d startPose = new Pose2d(new Vector2d(48, 48), Math.toRadians(45));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
+
+        TrajectoryActionBuilder backup = drive.actionBuilder(startPose)
+                .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
+
+        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(108, 12,45))
+                .turnTo(0)
+                .lineToX(32);
+
+        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(32, 12, 0))
+                .lineToX(37);
+
+        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(37, 12, 0))
+                .lineToX(42);
+
+        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(42, 12, 0))
+                .lineToX(47);
+
+        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(47, 12, 0))
+                .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
+
+
+        waitForStart();
+
+        Outtake outtake = new Outtake();
+        Intake intake = new Intake();
+        Carousel carousel = new Carousel();
+
+        Actions.runBlocking(
+                new SequentialAction(
+                        outtake.StartOuttake(),
+                        backup.build(),
+                        new SleepAction(0.5),
+                        carousel.Rotate(0.8),
+                        new SleepAction(0.5),
+                        carousel.Rotate(0.8),
+                        new SleepAction(0.5),
+                        carousel.Rotate(0.),
+                        new SleepAction(0.5),
+                        turnMove.build(),
+                        intake.StartIntake(1),
+                        move1.build(),
+                        new SleepAction(0.5),
+                        carousel.Rotate(-0.8),
+                        new SleepAction(0.5),
+                        move2.build(),
+                        new SleepAction(0.5),
+                        carousel.Rotate(-0.8),
+                        new SleepAction(0.5),
+                        move3.build(),
+                        new SleepAction(0.5),
+                        carousel.Rotate(-0.8),
+                        new SleepAction(0.5),
+                        intake.StartIntake(0),
+                        move4.build(),
+                        new SleepAction(0.5),
+                        carousel.Rotate(0.8),
+                        new SleepAction(0.5),
+                        carousel.Rotate(0.8),
+                        new SleepAction(0.5),
+                        carousel.Rotate(0.),
+                        new SleepAction(0.5)
+                )
+        );
+    }
+}
+

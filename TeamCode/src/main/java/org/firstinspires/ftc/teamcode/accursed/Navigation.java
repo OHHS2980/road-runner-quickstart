@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes;
+package org.firstinspires.ftc.teamcode.accursed;
 
 import android.util.Size;
 

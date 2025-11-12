@@ -47,8 +47,8 @@ public class Teleop extends OpMode {
         Button Y = new GamepadButton(driveOp, GamepadKeys.Button.Y);
         Button rT = new GamepadButton(driveOp, GamepadKeys.Button.RIGHT_BUMPER);
 
-        A.whenHeld(new IntakeCommand(intake));
-        B.whenHeld(new ReverseIntakeCommand(intake));
+        B.whenHeld(new IntakeCommand(intake));
+        A.whenHeld(new ReverseIntakeCommand(intake));
         lT.whenHeld(new CarouselCommand(carousel));
         rT.whenHeld(new ReverseCarouselCommand(carousel));
         X.whenPressed(new EmergencyShoot(outtake, 1));

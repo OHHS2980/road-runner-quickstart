@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
@@ -13,19 +14,22 @@ public class MeepMeepTesting {
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 15)
-                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
-                        .forward(30)
-                        .turn(Math.toRadians(90))
+                .followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-48, 48, Math.toRadians(135)))
+                        .lineTo(new Vector2d(-12,12))
+                        .turn(Math.toRadians(45))
+                        .lineTo(new Vector2d(-32, 12))
+                        .waitSeconds(0.5)
+                        .lineTo(new Vector2d(-37,12))
+                        .waitSeconds(0.5)
+                        .lineTo(new Vector2d(-42,12))
+                        .waitSeconds(0.5)
+                        .lineTo(new Vector2d(-47,12))
+                        .lineTo(new Vector2d(-12, 12))
+                        .turn(Math.toRadians(-45))
                         .build());
 
 
-        meepMeep.setBackground(MeepMeep.Background.FIELD_INTOTHEDEEP_JUICE_DARK)
+        meepMeep.setBackground(MeepMeep.Background.GRID_BLUE)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(myBot)
