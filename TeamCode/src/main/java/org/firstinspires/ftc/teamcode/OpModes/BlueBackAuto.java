@@ -17,8 +17,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "Red Auto")
-public class RedAuto extends LinearOpMode {
+@Autonomous(name = "Blue Back Auto")
+public class BlueBackAuto extends LinearOpMode {
 
 
 
@@ -40,7 +40,7 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action StartOuttake() {
-            return new Outtake.startOuttake();
+            return new startOuttake();
         }
     }
 
@@ -65,7 +65,7 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action StartIntake(double IntakePower) {
-            return new Intake.startIntake(IntakePower);
+            return new startIntake(IntakePower);
         }
     }
     public class Carousel {
@@ -139,37 +139,21 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action Rotate(int Direction) {
-            return new Carousel.rotate(Direction);
+            return new rotate(Direction);
         }
     }
 
     @Override
     public void runOpMode()
     {
-        Pose2d startPose = new Pose2d(new Vector2d(48, 48), Math.toRadians(45));
+        Pose2d startPose = new Pose2d(new Vector2d(-24, -64), Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
-        TrajectoryActionBuilder backup = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
+        TrajectoryActionBuilder forward = drive.actionBuilder(startPose)
+                .strafeToLinearHeading(new Vector2d(-12,12), Math.toRadians(90));
 
-        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(12, 12,Math.toRadians(45)))
-                .turnTo(Math.toRadians(0))
-                .lineToX(32);
-
-        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(32, 12, Math.toRadians(0)))
-                .lineToX(37);
-
-        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(37, 12, Math.toRadians(0)))
-                .lineToX(42);
-
-        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(42, 12, Math.toRadians(0)))
-                .lineToX(47);
-
-        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(47, 12, Math.toRadians(0)))
-                .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45))
-                .turnTo(Math.toRadians(45));
-
-
+        TrajectoryActionBuilder turn = drive.actionBuilder(new Pose2d(-12, 12,Math.toRadians(90)))
+                .turnTo(Math.toRadians(135));
 
         waitForStart();
 
@@ -180,46 +164,18 @@ public class RedAuto extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         outtake.StartOuttake(),
-                        backup.build(),
-
+                        forward.build(),
+                        new SleepAction(0.5),
+                        turn.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
                         new SleepAction(0.75),
                         carousel.Rotate(-1),
                         new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
-
-                        turnMove.build(),
-                        intake.StartIntake(1),
-                        new SleepAction(0.5),
-
-                        move1.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1),
-                        new SleepAction(0.5),
-
-                        move2.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1),
-                        new SleepAction(0.5),
-
-                        move3.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1),
-                        new SleepAction(0.5),
-
-                        intake.StartIntake(0),
-                        move4.build(),
-
-                        new SleepAction(0.5),
-                        carousel.Rotate(-1),
-                        new SleepAction(0.5),
-                        carousel.Rotate(-1),
-                        new SleepAction(0.75),
-                        carousel.Rotate(-1),
-                        new SleepAction(1)
+                        new SleepAction(0.5)
                 )
         );
+
     }
 }

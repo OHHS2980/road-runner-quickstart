@@ -77,8 +77,8 @@ public class BlueAuto extends LinearOpMode {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.008;
-            private double kI = 0.003;
+            private double kP = 0.01;
+            private double kI = 0.0045;
             private double kD = 0;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
@@ -166,7 +166,8 @@ public class BlueAuto extends LinearOpMode {
                 .lineToX(-47);
 
         TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(-47, 12, Math.toRadians(180)))
-                .strafeToLinearHeading(new Vector2d(-12,12), Math.toRadians(135));
+                .strafeToLinearHeading(new Vector2d(-12,12), Math.toRadians(135))
+                .turnTo(135);
 
 
         waitForStart();
