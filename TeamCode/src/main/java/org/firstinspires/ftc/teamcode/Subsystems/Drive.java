@@ -17,15 +17,17 @@ public class Drive extends SubsystemBase {
     public Drive(final HardwareMap hMap, GamepadEx givenGamepad) {
         register();
         front_left   = new Motor(hMap, "leftFront");
-        front_right   = new Motor(hMap, "rightFront");
+        front_right   = new Motor(hMap, "par");
         back_left    = new Motor(hMap, "leftBack");
-        back_right  = new Motor(hMap, "rightBack");
+        back_right  = new Motor(hMap, "perp");
 
         //front_left.set(0.25);
         //back_right.set(0.25);
 
-        //front_right.setInverted(true);
-        ////back_left.setInverted(true);
+        front_right.setInverted(true);
+        front_left.setInverted(true);
+        back_right.setInverted(true);
+        back_left.setInverted(true);
 
 
         mecanum = new MecanumDrive(

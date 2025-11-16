@@ -42,10 +42,10 @@ public class Teleop extends OpMode {
 
         Button A = new GamepadButton(driveOp, GamepadKeys.Button.A);
         Button B = new GamepadButton(driveOp, GamepadKeys.Button.B);
-        Button lT = new GamepadButton(driveOp, GamepadKeys.Button.LEFT_BUMPER);
+        Button rT = new GamepadButton(driveOp, GamepadKeys.Button.LEFT_BUMPER);
         Button X = new GamepadButton(driveOp, GamepadKeys.Button.X);
         Button Y = new GamepadButton(driveOp, GamepadKeys.Button.Y);
-        Button rT = new GamepadButton(driveOp, GamepadKeys.Button.RIGHT_BUMPER);
+        Button lT = new GamepadButton(driveOp, GamepadKeys.Button.RIGHT_BUMPER);
 
         B.whenHeld(new IntakeCommand(intake));
         A.whenHeld(new ReverseIntakeCommand(intake));
@@ -58,6 +58,6 @@ public class Teleop extends OpMode {
 
     @Override
     public void loop() {
-        CommandScheduler.getInstance().run();
-    }
+       CommandScheduler.getInstance().run();
+   }
 }

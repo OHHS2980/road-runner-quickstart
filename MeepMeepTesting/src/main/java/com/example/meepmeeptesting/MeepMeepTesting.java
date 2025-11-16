@@ -24,8 +24,7 @@ public class MeepMeepTesting {
                         .lineTo(new Vector2d(-42,12))
                         .waitSeconds(0.5)
                         .lineTo(new Vector2d(-47,12))
-                        .lineTo(new Vector2d(-12, 12))
-                        .turn(Math.toRadians(-45))
+                        .lineToLinearHeading(new Pose2d(new Vector2d(-12, 12), Math.toRadians(135)))
                         .build());
 
 

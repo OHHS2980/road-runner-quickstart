@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "thorin has all the girls")
+@Autonomous(name = "Red Auto")
 public class RedAuto extends LinearOpMode {
 
 
@@ -70,40 +70,37 @@ public class RedAuto extends LinearOpMode {
     public class Carousel {
         private DcMotor carouselMotor;
         private PIDController pid;
-        private double kP = 0;
-        private double kI = 0;
-        private double kD = 0;
+        private double kP = 2;
+        private double kI = 2;
+        private double kD = 0.5;
         public double motorCPR = 28 * 5 * 4;
-        public double carouselPower;
+        public double direction;
         public Carousel() {
             carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         }
         public class rotate implements Action {
             boolean initialized = false;
             PIDController pidController = new PIDController(kP, kI, kD);
-
-            public rotate(double CarouselPower)
+            public rotate(double Direction)
             {
-                carouselPower = CarouselPower;
+                direction = Direction;
             }
+            double target = carouselMotor.getCurrentPosition() + motorCPR / 3 * direction;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if (!initialized) {
-                    carouselMotor.setPower(carouselPower);
+                    carouselMotor.setPower(direction);
                     initialized = true;
                 }
                 //double pos = carouselMotor.getCurrentPosition();
 
-
-
                 carouselMotor.setPower(
-                        pidController.calculate(
-                                carouselMotor.getCurrentPosition(), carouselMotor.getCurrentPosition() + motorCPR / 3
-                        )
+                        pidController.calculate(carouselMotor.getCurrentPosition(), target)
                 );
+                telemetry.addData("speed:", carouselMotor.getPower());
 
-                if (pidController.getPositionError() > 1)
+                if (pidController.getPositionError() > 5)
                 {
                     return true;
                 }
@@ -116,8 +113,8 @@ public class RedAuto extends LinearOpMode {
                 //    return true;
             }
         }
-        public Action Rotate(double CarouselPower) {
-            return new rotate(CarouselPower);
+        public Action Rotate(double Direction) {
+            return new rotate(Direction);
         }
     }
 
@@ -130,20 +127,20 @@ public class RedAuto extends LinearOpMode {
         TrajectoryActionBuilder backup = drive.actionBuilder(startPose)
                 .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
 
-        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(108, 12,45))
-                .turnTo(0)
+        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(12, 12,Math.toRadians(45)))
+                .turnTo(Math.toRadians(0))
                 .lineToX(32);
 
-        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(32, 12, 0))
+        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(32, 12, Math.toRadians(0)))
                 .lineToX(37);
 
-        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(37, 12, 0))
+        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(37, 12, Math.toRadians(0)))
                 .lineToX(42);
 
-        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(42, 12, 0))
+        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(42, 12, Math.toRadians(0)))
                 .lineToX(47);
 
-        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(47, 12, 0))
+        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(47, 12, Math.toRadians(0)))
                 .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
 
 
@@ -158,37 +155,36 @@ public class RedAuto extends LinearOpMode {
                         outtake.StartOuttake(),
                         backup.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(0.8),
+                        carousel.Rotate(-1),
                         new SleepAction(0.5),
-                        carousel.Rotate(0.8),
+                        carousel.Rotate(-1),
                         new SleepAction(0.5),
-                        carousel.Rotate(0.),
+                        carousel.Rotate(-1),
                         new SleepAction(0.5),
                         turnMove.build(),
                         intake.StartIntake(1),
                         move1.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(-0.8),
+                        carousel.Rotate(1),
                         new SleepAction(0.5),
                         move2.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(-0.8),
+                        carousel.Rotate(1),
                         new SleepAction(0.5),
                         move3.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(-0.8),
+                        carousel.Rotate(1),
                         new SleepAction(0.5),
                         intake.StartIntake(0),
                         move4.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(0.8),
+                        carousel.Rotate(-1),
                         new SleepAction(0.5),
-                        carousel.Rotate(0.8),
+                        carousel.Rotate(-1),
                         new SleepAction(0.5),
-                        carousel.Rotate(0.),
+                        carousel.Rotate(-1),
                         new SleepAction(0.5)
                 )
         );
     }
 }
-
