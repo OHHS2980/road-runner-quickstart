@@ -70,7 +70,6 @@ public class BlueAuto extends LinearOpMode {
     }
     public class Carousel {
         private DcMotor carouselMotor;
-
         public Carousel() {
             carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         }
@@ -78,8 +77,8 @@ public class BlueAuto extends LinearOpMode {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.0025;
-            private double kI = 0;
+            private double kP = 0.008;
+            private double kI = 0.003;
             private double kD = 0;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
@@ -89,7 +88,8 @@ public class BlueAuto extends LinearOpMode {
                 carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
 
@@ -101,12 +101,15 @@ public class BlueAuto extends LinearOpMode {
                 if (initialized == false)
                 {
                     carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
                     pidController = new PIDController(kP, kI, kD);
-                    target = carouselMotor.getCurrentPosition() + ((motorCPR / 3) * direction);
+                    target = //carouselMotor.getCurrentPosition() +
+                            ((motorCPR / 3) * direction);
                     pidController.reset();
                     pidController.setSetPoint(target);
                     initialized = true;
@@ -121,7 +124,7 @@ public class BlueAuto extends LinearOpMode {
                 telemetry.update();
 
 
-                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 4)
+                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 6)
                 {
                     carouselMotor.setPower(0);
                     return false;
@@ -176,37 +179,44 @@ public class BlueAuto extends LinearOpMode {
                 new SequentialAction(
                         outtake.StartOuttake(),
                         backup.build(),
+
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
+                        new SleepAction(0.75),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
                         new SleepAction(0.5),
-                        carousel.Rotate(-1),
-                        new SleepAction(0.5),
+
                         turnMove.build(),
                         intake.StartIntake(1),
                         new SleepAction(0.5),
+
                         move1.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(1),
                         new SleepAction(0.5),
+
                         move2.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(1),
                         new SleepAction(0.5),
+
                         move3.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(1),
                         new SleepAction(0.5),
+
                         intake.StartIntake(0),
                         move4.build(),
+
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
+                        new SleepAction(0.75),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5)
+                        new SleepAction(1)
                 )
         );
 

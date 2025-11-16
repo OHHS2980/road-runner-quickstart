@@ -40,20 +40,21 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action StartOuttake() {
-            return new startOuttake();
+            return new Outtake.startOuttake();
         }
     }
 
     public class Intake {
         private DcMotor intakeMotor;
 
-        private double intakePower;
 
         public Intake() {
             intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         }
 
         public class startIntake implements Action {
+
+            double intakePower;
             public startIntake(double IntakePower) {
                 intakePower = IntakePower;
             }
@@ -64,57 +65,81 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action StartIntake(double IntakePower) {
-            return new startIntake(IntakePower);
+            return new Intake.startIntake(IntakePower);
         }
     }
     public class Carousel {
         private DcMotor carouselMotor;
-        private PIDController pid;
-        private double kP = 2;
-        private double kI = 2;
-        private double kD = 0.5;
-        public double motorCPR = 28 * 5 * 4;
-        public double direction;
         public Carousel() {
             carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         }
         public class rotate implements Action {
-            boolean initialized = false;
-            PIDController pidController = new PIDController(kP, kI, kD);
-            public rotate(double Direction)
+
+            private PIDController pidController;
+            public double direction;
+            private double kP = 0.008;
+            private double kI = 0.003;
+            private double kD = 0;
+            public double motorCPR = 28 * 5.23 * 3.61;
+            double target;
+            public rotate(int Direction)
             {
                 direction = Direction;
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             }
-            double target = carouselMotor.getCurrentPosition() + motorCPR / 3 * direction;
+
+            boolean initialized = false;
 
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    carouselMotor.setPower(direction);
+
+                if (initialized == false)
+                {
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                    pidController = new PIDController(kP, kI, kD);
+                    target = //carouselMotor.getCurrentPosition() +
+                            ((motorCPR / 3) * direction);
+                    pidController.reset();
+                    pidController.setSetPoint(target);
                     initialized = true;
                 }
-                //double pos = carouselMotor.getCurrentPosition();
 
-                carouselMotor.setPower(
-                        pidController.calculate(carouselMotor.getCurrentPosition(), target)
-                );
-                telemetry.addData("speed:", carouselMotor.getPower());
+                double output = pidController.calculate(carouselMotor.getCurrentPosition());
+                carouselMotor.setPower(output);
 
-                if (pidController.getPositionError() > 5)
-                {
-                    return true;
-                }
-                else
+                telemetry.addData("power", carouselMotor.getPower());
+                telemetry.addData("target", target);
+                telemetry.addData("current", carouselMotor.getCurrentPosition());
+                telemetry.update();
+
+
+                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 6)
                 {
                     carouselMotor.setPower(0);
                     return false;
                 }
+                else
+                {
+                    return true;
+                }
+
                 //if (pos > ) {
                 //    return true;
             }
         }
-        public Action Rotate(double Direction) {
-            return new rotate(Direction);
+        public Action Rotate(int Direction) {
+            return new Carousel.rotate(Direction);
         }
     }
 
@@ -154,36 +179,44 @@ public class RedAuto extends LinearOpMode {
                 new SequentialAction(
                         outtake.StartOuttake(),
                         backup.build(),
+
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
+                        new SleepAction(0.75),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
                         new SleepAction(0.5),
-                        carousel.Rotate(-1),
-                        new SleepAction(0.5),
+
                         turnMove.build(),
                         intake.StartIntake(1),
+                        new SleepAction(0.5),
+
                         move1.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(1),
                         new SleepAction(0.5),
+
                         move2.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(1),
                         new SleepAction(0.5),
+
                         move3.build(),
                         new SleepAction(0.5),
                         carousel.Rotate(1),
                         new SleepAction(0.5),
+
                         intake.StartIntake(0),
                         move4.build(),
+
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
                         new SleepAction(0.5),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
+                        new SleepAction(0.75),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5)
+                        new SleepAction(1)
                 )
         );
     }
