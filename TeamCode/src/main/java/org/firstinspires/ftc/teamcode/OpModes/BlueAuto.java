@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "Blue Auto")
+@Autonomous(name = "Blue Front Auto")
 public class BlueAuto extends LinearOpMode {
 
 
@@ -77,12 +77,13 @@ public class BlueAuto extends LinearOpMode {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.01;
-            private double kI = 0.0045;
+            private double kP = 0.012;
+            private double kI = 0.015;
             private double kD = 0;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
-            public rotate(int Direction)
+
+            public rotate(double Direction)
             {
                 direction = Direction;
                 carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -109,7 +110,7 @@ public class BlueAuto extends LinearOpMode {
 
                     pidController = new PIDController(kP, kI, kD);
                     target = //carouselMotor.getCurrentPosition() +
-                            ((motorCPR / 3) * direction);
+                            ((motorCPR / 5) * direction);
                     pidController.reset();
                     pidController.setSetPoint(target);
                     initialized = true;
@@ -124,7 +125,7 @@ public class BlueAuto extends LinearOpMode {
                 telemetry.update();
 
 
-                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 6)
+                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 1)
                 {
                     carouselMotor.setPower(0);
                     return false;
@@ -138,7 +139,7 @@ public class BlueAuto extends LinearOpMode {
                 //    return true;
             }
         }
-        public Action Rotate(int Direction) {
+        public Action Rotate(double Direction) {
             return new rotate(Direction);
         }
     }
@@ -166,8 +167,8 @@ public class BlueAuto extends LinearOpMode {
                 .lineToX(-47);
 
         TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(-47, 12, Math.toRadians(180)))
-                .strafeToLinearHeading(new Vector2d(-12,12), Math.toRadians(135))
-                .turnTo(135);
+                .lineToX(-12)
+                .turnTo(Math.toRadians(135));
 
 
         waitForStart();
@@ -181,13 +182,17 @@ public class BlueAuto extends LinearOpMode {
                         outtake.StartOuttake(),
                         backup.build(),
 
-                        new SleepAction(0.5),
-                        carousel.Rotate(-1),
-                        new SleepAction(0.75),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
                         new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
 
                         turnMove.build(),
                         intake.StartIntake(1),
@@ -195,29 +200,36 @@ public class BlueAuto extends LinearOpMode {
 
                         move1.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
 
                         move2.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
 
                         move3.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
+                        new SleepAction(0.5),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
 
                         intake.StartIntake(0),
                         move4.build(),
 
-                        new SleepAction(0.5),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(0.75),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(1)
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
+                        turnMove.build()
                 )
         );
 

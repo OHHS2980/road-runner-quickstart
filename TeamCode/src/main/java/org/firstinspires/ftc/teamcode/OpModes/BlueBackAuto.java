@@ -77,8 +77,8 @@ public class BlueBackAuto extends LinearOpMode {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.01;
-            private double kI = 0.0045;
+            private double kP = 0.012;
+            private double kI = 0.15;
             private double kD = 0;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
@@ -109,7 +109,7 @@ public class BlueBackAuto extends LinearOpMode {
 
                     pidController = new PIDController(kP, kI, kD);
                     target = //carouselMotor.getCurrentPosition() +
-                            ((motorCPR / 3) * direction);
+                            ((motorCPR / 6) * direction);
                     pidController.reset();
                     pidController.setSetPoint(target);
                     initialized = true;
@@ -124,7 +124,7 @@ public class BlueBackAuto extends LinearOpMode {
                 telemetry.update();
 
 
-                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 6)
+                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 1)
                 {
                     carouselMotor.setPower(0);
                     return false;
@@ -153,7 +153,7 @@ public class BlueBackAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-12,12), Math.toRadians(90));
 
         TrajectoryActionBuilder turn = drive.actionBuilder(new Pose2d(-12, 12,Math.toRadians(90)))
-                .turnTo(Math.toRadians(135));
+                .turnTo(Math.toRadians(100));
 
         waitForStart();
 
@@ -167,13 +167,13 @@ public class BlueBackAuto extends LinearOpMode {
                         forward.build(),
                         new SleepAction(0.5),
                         turn.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(-1),
-                        new SleepAction(0.75),
+                        new SleepAction(1),
                         carousel.Rotate(-1),
                         new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(0.5)
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1)
                 )
         );
 
