@@ -21,7 +21,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 public class RedAuto extends LinearOpMode {
 
 
-
+    // basically all the subsystem code
+// also puts code into roadrunner's "actions" which are like commands in teleop
     public class Outtake {
         private DcMotor outtakeMotorA;
         private DcMotor outtakeMotorB;
@@ -142,10 +143,12 @@ public class RedAuto extends LinearOpMode {
             return new Carousel.rotate(Direction);
         }
     }
-
+    // this is where the bulk of auto is coded
     @Override
     public void runOpMode()
     {
+        // creates "trajectories" which are like actions but specific to the drivebase
+        // roadrunner has the ability to take in coordinates which relate to the field and calculate a way for the robot to go there.
         Pose2d startPose = new Pose2d(new Vector2d(48, 48), Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 

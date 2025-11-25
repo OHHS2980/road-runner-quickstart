@@ -5,10 +5,8 @@ import com.arcrobotics.ftclib.command.button.Button;
 import com.arcrobotics.ftclib.command.button.GamepadButton;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Commands.CarouselCommand;
 import org.firstinspires.ftc.teamcode.Commands.EmergencyShoot;
@@ -27,7 +25,6 @@ public class Teleop extends OpMode {
     public enum state {
     }
     GamepadEx driveOp;
-    Motor front_right;
 
     @Override
     public void init() {
@@ -38,7 +35,6 @@ public class Teleop extends OpMode {
         Intake intake = new Intake(hardwareMap, "intakeMotor"); //motor
         Outtake outtake =  new Outtake(hardwareMap, "outtakeMotor"); //motor
         Carousel carousel = new Carousel(hardwareMap, "carouselMotor"); //motor
-        front_right = new Motor(hardwareMap, "par");
 
         //DcMotor intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
         //intakeMotor.setPower(1);
@@ -56,12 +52,10 @@ public class Teleop extends OpMode {
         rT.whenHeld(new ReverseCarouselCommand(carousel));
         X.whenPressed(new EmergencyShoot(outtake, 1));
         Y.whenPressed(new EmergencyShoot(outtake, 0));
-
     }
 
     @Override
     public void loop() {
        CommandScheduler.getInstance().run();
-       telemetry.addData("power: ", front_right.get);
    }
 }

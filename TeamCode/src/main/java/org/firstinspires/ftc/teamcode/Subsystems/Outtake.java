@@ -1,11 +1,12 @@
-// note: thorin says that the flywheel will not use encoders for this comp
-
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+// this sets up the outtake subsystem to be used in teleop.
+
+// first, define the motors in this subsystem:
 public class Outtake extends SubsystemBase {
 
     DcMotor outtakeMotorA;
@@ -19,6 +20,10 @@ public class Outtake extends SubsystemBase {
         outtakeMotorB.setPower(1);
     }
 
+    // below are what java calls methods
+    // they are fed into commands, which are later called by opmodes
+
+    // setting a power to negative makes the motor run backward!
     public void startOuttake(int power) {
         outtakeMotorA.setPower(power);
         outtakeMotorB.setPower(-power);

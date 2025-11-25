@@ -7,8 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
-
-@Autonomous(name = "start diggin in ur butt twin")
 public class TestAuto extends LinearOpMode {
 
     @Override

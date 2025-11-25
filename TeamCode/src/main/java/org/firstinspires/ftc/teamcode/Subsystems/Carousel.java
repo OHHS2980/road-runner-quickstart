@@ -11,17 +11,21 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+// this sets up the ferris wheel subsystem to be used in teleop.
+
+// first, define the motors in this subsystem:
 public class Carousel extends SubsystemBase {
     public DcMotor carouselMotor;
 
     Carousel.PID pidController;
-    double encoder = 28 * 4 * 5; //4 and 5 from the gearboxes
+    double encoder = 28 * 4 * 5; // 28 from encoder ticks, 4 and 5 from the gearboxes
     public Carousel(final HardwareMap hMap, final String CMotor) {
         carouselMotor = hMap.get(DcMotor.class, "carouselMotor"); //motor
 
         pidController = new Carousel.PID();
     }
 
+    // unused code for PID, which adjusts power to the motors
     public class PID {
         float kP = 0;
         float kI = 0;
@@ -50,6 +54,7 @@ public class Carousel extends SubsystemBase {
 
     }
 
+    // an action that will run in roadrunner autonomous
     public class autoShoot implements Action {
         int initialEncoderPosition = carouselMotor.getCurrentPosition();
         @Override
@@ -74,6 +79,8 @@ public class Carousel extends SubsystemBase {
         return carouselMotor;
     }
 
+    // below are what java calls methods
+    // they are fed into commands, which are later called by opmodes
     public void startCarousel(double power) {
         carouselMotor.setPower(power);
     }
@@ -98,14 +105,6 @@ public class Carousel extends SubsystemBase {
         carouselMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-
-    /*public void reverseCarouselSection(double power) {
-        carouselMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        carouselMotor.setTargetPosition((int) encoder / 3);
-        carouselMotor.setPower(power);
-        carouselMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    }*/
 
     public void stopCarousel() {
         carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
