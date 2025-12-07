@@ -57,5 +57,6 @@ public class Teleop extends OpMode {
     @Override
     public void loop() {
        CommandScheduler.getInstance().run();
+
    }
 }

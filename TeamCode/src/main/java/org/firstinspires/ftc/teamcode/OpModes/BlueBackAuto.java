@@ -125,7 +125,7 @@ public class BlueBackAuto extends LinearOpMode {
                 telemetry.update();
 
 
-                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 1)
+                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 5)
                 {
                     carouselMotor.setPower(0);
                     return false;
@@ -148,7 +148,7 @@ public class BlueBackAuto extends LinearOpMode {
     public void runOpMode()
     {
         // creates "trajectories" which are like actions but specific to the drivebase
-        // roadrunner has the ability to take in coordinates which relate to the field and calculate a way for the robot to go there.
+        // roadrunner has the ability to take in coordinates which relate to the field and calculate a way for the robot to go there.RedBackAuto
         Pose2d startPose = new Pose2d(new Vector2d(-24, -64), Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
@@ -156,7 +156,7 @@ public class BlueBackAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-12,12), Math.toRadians(90));
 
         TrajectoryActionBuilder turn = drive.actionBuilder(new Pose2d(-12, 12,Math.toRadians(90)))
-                .turnTo(Math.toRadians(100));
+                .turnTo(Math.toRadians(110));
 
         waitForStart();
 

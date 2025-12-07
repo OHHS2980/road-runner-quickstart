@@ -17,11 +17,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "Red Front Auto")
-public class RedAuto extends LinearOpMode {
+@Autonomous(name = "KILLME")
+public class BlueAutoTest extends LinearOpMode {
 
-
-    // basically all the subsystem code
+// basically all the subsystem code
 // also puts code into roadrunner's "actions" which are like commands in teleop
     public class Outtake {
         private DcMotor outtakeMotorA;
@@ -41,7 +40,7 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action StartOuttake() {
-            return new Outtake.startOuttake();
+            return new startOuttake();
         }
     }
 
@@ -54,7 +53,6 @@ public class RedAuto extends LinearOpMode {
         }
 
         public class startIntake implements Action {
-
             double intakePower;
             public startIntake(double IntakePower) {
                 intakePower = IntakePower;
@@ -66,7 +64,7 @@ public class RedAuto extends LinearOpMode {
             }
         }
         public Action StartIntake(double IntakePower) {
-            return new Intake.startIntake(IntakePower);
+            return new startIntake(IntakePower);
         }
     }
     public class Carousel {
@@ -74,16 +72,38 @@ public class RedAuto extends LinearOpMode {
         public Carousel() {
             carouselMotor = hardwareMap.get(DcMotor.class, "carouselMotor");
         }
+
+        public class turn implements Action {
+            public double power;
+            public int time;
+
+            public turn(double Power, int Time) {
+                power = Power;
+                time = Time;
+            }
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                carouselMotor.setPower(power);
+                sleep(time);
+                carouselMotor.setPower(0);
+                return false;
+            }
+        }
+
+        public Action Turn(double Power, int Time) {return new turn(Power, Time);}
+
         public class rotate implements Action {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.004;
-            private double kI = 0.275;
-            private double kD = 0.001;
+            private double kP = 0.012;
+            private double kI = 0.015;
+            private double kD = 0;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
-            public rotate(int Direction)
+
+            public rotate(double Direction)
             {
                 direction = Direction;
                 carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -139,113 +159,38 @@ public class RedAuto extends LinearOpMode {
                 //    return true;
             }
         }
-
-        public class shoot implements Action {
-
-            private PIDController pidController;
-            public double direction;
-            private double kP = 0.004;
-            private double kI = 0.285;
-            private double kD = 0.0015;
-            public double motorCPR = 28 * 5.23 * 3.61;
-            double target;
-            public shoot(int Direction)
-            {
-                direction = Direction;
-                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            }
-
-            boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                if (initialized == false)
-                {
-                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-                    pidController = new PIDController(kP, kI, kD);
-                    target = //carouselMotor.getCurrentPosition() +
-                            ((motorCPR / 5) * direction);
-                    pidController.reset();
-                    pidController.setSetPoint(target);
-                    initialized = true;
-                }
-
-                double output = pidController.calculate(carouselMotor.getCurrentPosition());
-                carouselMotor.setPower(output);
-
-                telemetry.addData("power", carouselMotor.getPower());
-                telemetry.addData("target", target);
-                telemetry.addData("current", carouselMotor.getCurrentPosition());
-                telemetry.update();
-
-
-                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 1)
-                {
-                    carouselMotor.setPower(0);
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-
-                //if (pos > ) {
-                //    return true;
-            }
+        public Action Rotate(double Direction) {
+            return new rotate(Direction);
         }
-
-        public Action Rotate(int Direction) {
-            return new Carousel.rotate(Direction);
-        }
-
-        public Action Shoot(int Direction) {
-            return new Carousel.shoot(Direction);
-        }
-
     }
-
-    // this is where the bulk of auto is coded
+// this is where the bulk of auto is coded
     @Override
     public void runOpMode()
     {
         // creates "trajectories" which are like actions but specific to the drivebase
         // roadrunner has the ability to take in coordinates which relate to the field and calculate a way for the robot to go there.
-        Pose2d startPose = new Pose2d(new Vector2d(48, 48), Math.toRadians(45));
+        Pose2d startPose = new Pose2d(new Vector2d(-48, 48), Math.toRadians(135));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         TrajectoryActionBuilder backup = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(-14,14), Math.toRadians(135));
 
-        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(12, 12,Math.toRadians(45)))
-                .turnTo(Math.toRadians(0))
-                .lineToX(32);
+        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(-14, 14,Math.toRadians(135)))
+                .turnTo(Math.toRadians(170))
+                .lineToX(-35);
 
-        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(32, 12, Math.toRadians(0)))
-                .lineToX(37);
+        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(-35, 14, Math.toRadians(170)))
+                .lineToX(-40);
 
-        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(37, 12, Math.toRadians(0)))
-                .lineToX(42);
+        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(-40, 14, Math.toRadians(170)))
+                .lineToX(-45);
 
-        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(42, 12, Math.toRadians(0)))
-                .lineToX(47);
+        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(-45, 14, Math.toRadians(170)))
+                .lineToX(-50);
 
-        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(47, 12, Math.toRadians(0)))
-                .lineToX(12)
-                .turnTo(Math.toRadians(45));
-
-
+        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(-50, 14, Math.toRadians(170)))
+                .lineToX(-12)
+                .turnTo(Math.toRadians(135));
 
 
         waitForStart();
@@ -254,21 +199,18 @@ public class RedAuto extends LinearOpMode {
         Intake intake = new Intake();
         Carousel carousel = new Carousel();
 
+        // runs actions and trajectories as well as delays in a specific order - this is THE AUTO!
         Actions.runBlocking(
                 new SequentialAction(
                         outtake.StartOuttake(),
                         backup.build(),
 
                         new SleepAction(1),
-                        carousel.Shoot(-1),
-                        new SleepAction(1.25),
-                        carousel.Shoot(-1),
-                        new SleepAction(1.25),
-                        carousel.Shoot(-1),
-                        new SleepAction(1.25),
-                        carousel.Shoot(-1),
-                        new SleepAction(.25),
-                        carousel.Shoot(-1),
+                        carousel.Turn(-0.75,250),
+                        new SleepAction(1),
+                        carousel.Turn(0.5, 250),
+                        new SleepAction(1),
+                        carousel.Turn(-0.75,250),
                         new SleepAction(1),
 
                         turnMove.build(),
@@ -277,37 +219,38 @@ public class RedAuto extends LinearOpMode {
 
                         move1.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
 
                         move2.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
 
                         move3.build(),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
-                        carousel.Rotate(1),
+                        carousel.Rotate(1.2),
                         new SleepAction(0.5),
 
                         intake.StartIntake(0),
                         move4.build(),
 
                         new SleepAction(1),
-                        carousel.Shoot(-1),
+                        carousel.Rotate(-1),
                         new SleepAction(1),
-                        carousel.Shoot(-1),
+                        carousel.Rotate(-1),
                         new SleepAction(1),
-                        carousel.Shoot(-1),
+                        carousel.Rotate(-1),
                         new SleepAction(1),
-                        carousel.Shoot(-1),
+                        carousel.Rotate(-1),
                         new SleepAction(1),
-                        carousel.Shoot(-1),
+                        carousel.Rotate(-1),
                         new SleepAction(1),
                         turnMove.build()
                 )
         );
+
     }
 }

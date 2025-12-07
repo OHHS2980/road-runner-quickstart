@@ -25,8 +25,6 @@ public class RightLeftAuto extends LinearOpMode {
 
     public DcMotor carouselMotor;
 
-
-
     boolean fullyDone = false;
 
     int done = 0;
