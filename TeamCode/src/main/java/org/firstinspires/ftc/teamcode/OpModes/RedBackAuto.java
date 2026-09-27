@@ -78,9 +78,9 @@ public class RedBackAuto extends LinearOpMode {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.012;
-            private double kI = 0.15;
-            private double kD = 0;
+            private double kP = 0.004;
+            private double kI = 0.275;
+            private double kD = 0.001;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
             public rotate(int Direction)
@@ -110,7 +110,7 @@ public class RedBackAuto extends LinearOpMode {
 
                     pidController = new PIDController(kP, kI, kD);
                     target = //carouselMotor.getCurrentPosition() +
-                            ((motorCPR / 6) * direction);
+                            ((motorCPR / 3) * direction);
                     pidController.reset();
                     pidController.setSetPoint(target);
                     initialized = true;
@@ -125,7 +125,7 @@ public class RedBackAuto extends LinearOpMode {
                 telemetry.update();
 
 
-                if (Math.abs(target - carouselMotor.getCurrentPosition()) < 5)
+                if (Math.abs(pidController.getPositionError()) < 1)
                 {
                     carouselMotor.setPower(0);
                     return false;
@@ -139,8 +139,80 @@ public class RedBackAuto extends LinearOpMode {
                 //    return true;
             }
         }
+
+        public class shoot implements Action {
+
+            private PIDController pidController;
+            public double direction;
+            private double kP = 0.004;
+            private double kI = 0.285;
+            private double kD = 0.0015;
+            public double motorCPR = 28 * 5.23 * 3.61;
+            double target;
+            public shoot(int Direction)
+            {
+                direction = Direction;
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            }
+
+            boolean initialized = false;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+                if (initialized == false)
+                {
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    carouselMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+                    pidController = new PIDController(kP, kI, kD);
+                    target = //carouselMotor.getCurrentPosition() +
+                            ((motorCPR / 3) * direction);
+                    pidController.reset();
+                    pidController.setSetPoint(target);
+                    initialized = true;
+                }
+
+                double output = pidController.calculate(carouselMotor.getCurrentPosition());
+                carouselMotor.setPower(output);
+
+                telemetry.addData("power", carouselMotor.getPower());
+                telemetry.addData("target", target);
+                telemetry.addData("current", carouselMotor.getCurrentPosition());
+                telemetry.update();
+
+
+                // if (Math.abs(target - carouselMotor.getCurrentPosition()) < 1)
+                if (Math.abs(pidController.getPositionError()) < 1)
+                {
+                    carouselMotor.setPower(0);
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+
+                //if (pos > ) {
+                //    return true;
+            }
+        }
+
         public Action Rotate(int Direction) {
-            return new rotate(Direction);
+            return new RedBackAuto.Carousel.rotate(Direction);
+        }
+
+        public Action Shoot(int Direction) {
+            return new RedBackAuto.Carousel.shoot(Direction);
         }
     }
     // this is where the bulk of auto is coded
@@ -171,11 +243,11 @@ public class RedBackAuto extends LinearOpMode {
                         new SleepAction(0.5),
                         turn.build(),
                         new SleepAction(1),
-                        carousel.Rotate(-1),
+                        carousel.Shoot(-1),
                         new SleepAction(1),
-                        carousel.Rotate(-1),
+                        carousel.Shoot(-1),
                         new SleepAction(1),
-                        carousel.Rotate(-1),
+                        carousel.Shoot(-1),
                         new SleepAction(1)
                 )
         );

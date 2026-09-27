@@ -209,8 +209,6 @@ public class BlueAuto extends LinearOpMode {
                         shoot.build(),
                         new SleepAction(1),
 
-                        /*new SleepAction(1),
-                        carousel.Rotate(-1),
                         new SleepAction(1),
                         carousel.Rotate(-1),
                         new SleepAction(1),
@@ -219,7 +217,9 @@ public class BlueAuto extends LinearOpMode {
                         carousel.Rotate(-1),
                         new SleepAction(1),
                         carousel.Rotate(-1),
-                        new SleepAction(1),*/
+                        new SleepAction(1),
+                        carousel.Rotate(-1),
+                        new SleepAction(1),
 
                         backup.build(),
                         turnMove.build(),

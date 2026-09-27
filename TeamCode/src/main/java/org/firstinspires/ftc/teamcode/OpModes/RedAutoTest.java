@@ -17,10 +17,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Autonomous(name = "blue auto with pid test")
-public class BlueAutoTest extends LinearOpMode {
+@Autonomous(name = "red auto with pid test")
+public class RedAutoTest extends LinearOpMode {
 
-// basically all the subsystem code
+
+    // basically all the subsystem code
 // also puts code into roadrunner's "actions" which are like commands in teleop
     public class Outtake {
         private DcMotor outtakeMotorA;
@@ -40,7 +41,7 @@ public class BlueAutoTest extends LinearOpMode {
             }
         }
         public Action StartOuttake() {
-            return new startOuttake();
+            return new Outtake.startOuttake();
         }
     }
 
@@ -53,6 +54,7 @@ public class BlueAutoTest extends LinearOpMode {
         }
 
         public class startIntake implements Action {
+
             double intakePower;
             public startIntake(double IntakePower) {
                 intakePower = IntakePower;
@@ -64,7 +66,7 @@ public class BlueAutoTest extends LinearOpMode {
             }
         }
         public Action StartIntake(double IntakePower) {
-            return new startIntake(IntakePower);
+            return new Intake.startIntake(IntakePower);
         }
     }
     public class Carousel {
@@ -142,8 +144,8 @@ public class BlueAutoTest extends LinearOpMode {
 
             private PIDController pidController;
             public double direction;
-            private double kP = 0.004;
-            private double kI = 0.285;
+            private double kP = 0.0045; //0.004
+            private double kI = 0.3; //0.285
             private double kD = 0.0015;
             public double motorCPR = 28 * 5.23 * 3.61;
             double target;
@@ -188,6 +190,8 @@ public class BlueAutoTest extends LinearOpMode {
                 telemetry.addData("current", carouselMotor.getCurrentPosition());
                 telemetry.update();
 
+
+                // if (Math.abs(target - carouselMotor.getCurrentPosition()) < 1)
                 if (Math.abs(pidController.getPositionError()) < 1)
                 {
                     carouselMotor.setPower(0);
@@ -204,41 +208,45 @@ public class BlueAutoTest extends LinearOpMode {
         }
 
         public Action Rotate(int Direction) {
-            return new BlueAutoTest.Carousel.rotate(Direction);
+            return new Carousel.rotate(Direction);
         }
 
         public Action Shoot(int Direction) {
-            return new BlueAutoTest.Carousel.shoot(Direction);
+            return new Carousel.shoot(Direction);
         }
+
     }
-// this is where the bulk of auto is coded
+
+    // this is where the bulk of auto is coded
     @Override
     public void runOpMode()
     {
         // creates "trajectories" which are like actions but specific to the drivebase
         // roadrunner has the ability to take in coordinates which relate to the field and calculate a way for the robot to go there.
-        Pose2d startPose = new Pose2d(new Vector2d(-48, 48), Math.toRadians(135));
+        Pose2d startPose = new Pose2d(new Vector2d(48, 48), Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         TrajectoryActionBuilder backup = drive.actionBuilder(startPose)
-                .strafeToLinearHeading(new Vector2d(-14,14), Math.toRadians(135));
+                .strafeToLinearHeading(new Vector2d(12,12), Math.toRadians(45));
 
-        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(-14, 14,Math.toRadians(135)))
-                .turnTo(Math.toRadians(170))
-                .lineToX(-35);
+        TrajectoryActionBuilder turnMove = drive.actionBuilder(new Pose2d(12, 12,Math.toRadians(45)))
+                .turnTo(Math.toRadians(0))
+                .lineToX(25);
 
-        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(-35, 14, Math.toRadians(170)))
-                .lineToX(-40);
+        TrajectoryActionBuilder move1 = drive.actionBuilder(new Pose2d(25, 12, Math.toRadians(0)))
+                .lineToX(30);
 
-        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(-40, 14, Math.toRadians(170)))
-                .lineToX(-45);
+        TrajectoryActionBuilder move2 = drive.actionBuilder(new Pose2d(30, 12, Math.toRadians(0)))
+                .lineToX(35);
 
-        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(-45, 14, Math.toRadians(170)))
-                .lineToX(-50);
+        TrajectoryActionBuilder move3 = drive.actionBuilder(new Pose2d(35, 12, Math.toRadians(0)))
+                .lineToX(40);
 
-        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(-50, 14, Math.toRadians(170)))
-                .lineToX(-12)
-                .turnTo(Math.toRadians(135));
+        TrajectoryActionBuilder move4 = drive.actionBuilder(new Pose2d(40, 12, Math.toRadians(0)))
+                .lineToX(12)
+                .turnTo(Math.toRadians(45));
+
+
 
 
         waitForStart();
@@ -247,17 +255,12 @@ public class BlueAutoTest extends LinearOpMode {
         Intake intake = new Intake();
         Carousel carousel = new Carousel();
 
-        // runs actions and trajectories as well as delays in a specific order - this is THE AUTO!
         Actions.runBlocking(
                 new SequentialAction(
                         outtake.StartOuttake(),
                         backup.build(),
 
                         new SleepAction(1),
-                        carousel.Shoot(-1),
-                        new SleepAction(1.25),
-                        carousel.Shoot(-1),
-                        new SleepAction(1.25),
                         carousel.Shoot(-1),
                         new SleepAction(1.25),
                         carousel.Shoot(-1),
@@ -299,53 +302,7 @@ public class BlueAutoTest extends LinearOpMode {
                         carousel.Shoot(-1),
                         new SleepAction(1),
                         turnMove.build()
-
-                        /*new SleepAction(1),
-                        carousel.Turn(-0.75,250),
-                        new SleepAction(1),
-                        carousel.Turn(0.5, 250),
-                        new SleepAction(1),
-                        carousel.Turn(-0.75,250),
-                        new SleepAction(1),
-
-                        turnMove.build(),
-                        intake.StartIntake(1),
-                        new SleepAction(0.5),
-
-                        move1.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1.2),
-                        new SleepAction(0.5),
-
-                        move2.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1.2),
-                        new SleepAction(0.5),
-
-                        move3.build(),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1.2),
-                        new SleepAction(0.5),
-                        carousel.Rotate(1.2),
-                        new SleepAction(0.5),
-
-                        intake.StartIntake(0),
-                        move4.build(),
-
-                        new SleepAction(1),
-                        carousel.Rotate(-1),
-                        new SleepAction(1),
-                        carousel.Rotate(-1),
-                        new SleepAction(1),
-                        carousel.Rotate(-1),
-                        new SleepAction(1),
-                        carousel.Rotate(-1),
-                        new SleepAction(1),
-                        carousel.Rotate(-1),
-                        new SleepAction(1),
-                        turnMove.build()*/
                 )
         );
-
     }
 }
